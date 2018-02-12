@@ -26,6 +26,8 @@ This app will consist of a single screen with just canvas and an about modal whi
 
 On the top left will show the score of the player as is associated with their size and how much food they have eaten. Once they reach a certain score, they will win the game.
 
+![Wireframe 1](https://github.com/wrudnicki16/Meios/blob/master/meios1.png)
+
 ## Architecture and Technologies
 
 This project will be implemented with the following technologies:
