@@ -13,6 +13,7 @@ In Meios, players will be able to:
 
 - [ ] Divide into multiple smaller cells
 - [ ] Merge back into bigger cells, combining their sizes
+- [ ] Eat other cells
 - [ ] Eject parts of themselves
 
 In addition, this project will include:
