@@ -129,16 +129,17 @@ function draw() {
 // ############### RANDOM HELPERS ###################
 
 function setSpeed(blob, index) {
-  if (distX > 0 && distX > inertia * blob.maxSpeed) {
+  let L = Math.sqrt(distX*distX + distY*distY);
+  if (distX > 120) {
     blob.dx = blob.maxSpeed;
-  } else if (distX < 0 && distX < inertia * -blob.maxSpeed) {
+  } else if (distX < -120) {
     blob.dx = -blob.maxSpeed;
   } else {
     blob.dx = distX / inertia;
   }
-  if (distY > 0 && distY > inertia * blob.maxSpeed) {
+  if (distY > 120) {
     blob.dy = blob.maxSpeed;
-  } else if (distY < 0 && distY < inertia * -blob.maxSpeed) {
+  } else if (distY < -120) {
     blob.dy = -blob.maxSpeed;
   } else {
     blob.dy = distY / inertia;
