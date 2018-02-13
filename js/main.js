@@ -24,7 +24,13 @@ let spaceScheduled = false; let lastSpaceEvent;
 let enemyDetectionEventScheduled = false;
 let enemyDecisionMade = false;
 player.blobs.push(oneBlob);
+
 let enemyPlayer = new Player("Enemy");
+
+// let enemyPlayer1 = new Player("Enemy");
+// let enemyPlayer2 = new Player("Enemy");
+// let enemyPlayer3 = new Player("Enemy");
+// let enemyPlayer4 = new Player("Enemy");
 let enemyBlob = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
 
 // let enemyBlobs = [];
@@ -119,7 +125,7 @@ function draw() {
   drawBalls();
   drawScore();
   ballCollisionDetection();
-  enemyBallCollisionDetection();
+  enemyBallCollisionDetection(enemyBlob);
   enemyBlobDetection(enemyBlob);
 
   for (let i = 0; i < player.blobs.length; i++) {
@@ -260,14 +266,23 @@ function setEnemySpeed(blob) {
   let difX = playerBlob.x - blob.x;
   let difY = playerBlob.y - blob.y;
   let L = Math.sqrt(difX*difX + difY*difY);
-  if (L > 200) {
-    let food = findClosestBall(blob);
+  let { food, foodDistance } = findClosestFoodAndDistance(blob);
+
+  if (L > 150) {
     let foodDifX = food.x - blob.x;
     let foodDifY = food.y - blob.y;
     setSpeedFromDistance(foodDifX, foodDifY, blob);
+    // If smaller, be greedy, otherwise,
+    // if a quarter of the distance to player, go for food.
+
+    if (blob.radius > playerBlob.radius) {
+      if (foodDistance > L / 4) {
+        setSpeedFromDistance(difX, difY, blob);
+      }
+    }
     preventOutOfBounds(blob);
   } else {
-    // attack player if smaller, otherwise run away.
+    // attack player if smaller, otherwise increase distance from player.
     debugger;
     if (blob.radius > playerBlob.radius) {
       setSpeedFromDistance(difX, difY, blob);
@@ -297,7 +312,7 @@ function findClosestPlayerBlob(blob) {
   return closestBlob;
 }
 
-function findClosestBall(blob) {
+function findClosestFoodAndDistance(blob) {
   if (balls.length > 0) {
     let closestBall = balls[0];
     let minBallDist;
@@ -312,22 +327,22 @@ function findClosestBall(blob) {
         minBallDist = L;
       }
     }
-    return closestBall;
+    return { food: closestBall, foodDistance: minBallDist };
   }
 }
 
 
 // Collision detection working.
-function enemyBallCollisionDetection() {
+function enemyBallCollisionDetection(blob) {
   for (let j = 0; j < balls.length; j++) {
     let ball = balls[j];
-    if (ball.status === 1 && enemyBlob.status === 1) {
-      if ((ball.x - ballRadius > enemyBlob.x - enemyBlob.radius && ball.x + ballRadius < enemyBlob.x + enemyBlob.radius) &&
-          (ball.y - ballRadius > enemyBlob.y - enemyBlob.radius && ball.y + ballRadius < enemyBlob.y + enemyBlob.radius)) {
+    if (ball.status === 1 && blob.status === 1) {
+      if ((ball.x - ballRadius > blob.x - blob.radius && ball.x + ballRadius < blob.x + blob.radius) &&
+          (ball.y - ballRadius > blob.y - blob.radius && ball.y + ballRadius < blob.y + blob.radius)) {
             ball.x = getRandomInt(ballRadius + 1, canvas.width - ballRadius - 1);
             ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
-            enemyBlob.eat();
-            if (enemyPlayer.score === 120) {
+            blob.eat();
+            if (blob.player.score === 120) {
               alert("THE ENEMY OVERWHELMED YOU!");
               document.location.reload();
             }
