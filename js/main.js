@@ -22,9 +22,18 @@ let player = new Player("Wyatt");
 let oneBlob = new Blob(startX, startY, dx, dy, maxSpeed, player, blobRadius, null);
 let spaceScheduled = false; let lastSpaceEvent;
 let enemyDetectionEventScheduled = false;
+let enemyDecisionMade = false;
 player.blobs.push(oneBlob);
 let enemyPlayer = new Player("Enemy");
-let enemyBlob = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius * 2, null);
+let enemyBlob = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
+
+// let enemyBlobs = [];
+// let enemyBlob1 = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
+// let enemyBlob2 = new Blob(startX + (startX / 2), startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
+// let enemyBlob3 = new Blob(startX / 2, startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
+// let enemyBlob4 = new Blob(startX + (startX / 2), startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
+// enemyBlobs.push(enemyBlob1); enemyBlobs.push(enemyBlob2);
+// enemyBlobs.push(enemyBlob3); enemyBlobs.push(enemyBlob4);
 
 debugger;
 
@@ -121,17 +130,23 @@ function draw() {
       debugger;
       blob.slowToMaxSpeed();
       preventOutOfBounds(blob);
-
-      blob.x += blob.dx;
-      blob.y += blob.dy;
     } else {
       console.warn(blob.x);
       setSpeed(blob, i);
-      blob.x += blob.dx;
-      blob.y += blob.dy;
     }
+    blob.x += blob.dx;
+    blob.y += blob.dy;
   }
-
+  if (!enemyDecisionMade) {
+    enemyDecisionMade = true;
+    setTimeout(() => {
+      enemyDecisionMade = false;
+      setEnemySpeed(enemyBlob);
+    }, 200);
+  }
+  preventOutOfBounds(enemyBlob);
+  enemyBlob.x += enemyBlob.dx;
+  enemyBlob.y += enemyBlob.dy;
 
   requestAnimationFrame(draw);
 }
@@ -139,22 +154,26 @@ function draw() {
 // ############### RANDOM HELPERS ###################
 
 function setSpeed(blob, index) {
-  if (distX > 120) {
-    blob.dx = blob.maxSpeed;
-  } else if (distX < -120) {
-    blob.dx = -blob.maxSpeed;
-  } else {
-    blob.dx = distX / inertia;
-  }
-  if (distY > 120) {
-    blob.dy = blob.maxSpeed;
-  } else if (distY < -120) {
-    blob.dy = -blob.maxSpeed;
-  } else {
-    blob.dy = distY / inertia;
-  }
+  setSpeedFromDistance(distX, distY, blob);
   preventBlobCollision(blob, index);
   preventOutOfBounds(blob);
+}
+
+function setSpeedFromDistance(distanceX, distanceY, blob) {
+  if (distanceX > 120) {
+    blob.dx = blob.maxSpeed;
+  } else if (distanceX < -120) {
+    blob.dx = -blob.maxSpeed;
+  } else {
+    blob.dx = distanceX / inertia;
+  }
+  if (distanceY > 120) {
+    blob.dy = blob.maxSpeed;
+  } else if (distanceY < -120) {
+    blob.dy = -blob.maxSpeed;
+  } else {
+    blob.dy = distanceY / inertia;
+  }
 }
 
 // ################# COLLISION DETECTION ####################
@@ -223,7 +242,7 @@ function ballCollisionDetection() {
               ball.x = getRandomInt(ballRadius + 1, canvas.width - ballRadius - 1);
               ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
               blob.eat();
-              if (player.score === 40) {
+              if (player.score === 120) {
                 alert("CONGRATULATIONS, YOU'VE WON!");
                 document.location.reload();
               }
@@ -235,23 +254,70 @@ function ballCollisionDetection() {
 
 // ################### CALCULATING AI MOVEMENT ################
 
-// function setEnemySpeed(blob) {
-//   let distXToPlayer =
-//   if (condition) {
-//
-//   }
-// }
-
-// function findClosestBlob(enemyBlob) {
-//   for (let i = 0; i < player.blobs.length; i++) {
-//     let playerBlob =
-//   }
-// }
-
-function findClosestBall() {
-
+// Need to check ^
+function setEnemySpeed(blob) {
+  let playerBlob = findClosestPlayerBlob(blob);
+  let difX = playerBlob.x - blob.x;
+  let difY = playerBlob.y - blob.y;
+  let L = Math.sqrt(difX*difX + difY*difY);
+  if (L > 200) {
+    let food = findClosestBall(blob);
+    let foodDifX = food.x - blob.x;
+    let foodDifY = food.y - blob.y;
+    setSpeedFromDistance(foodDifX, foodDifY, blob);
+    preventOutOfBounds(blob);
+  } else {
+    // attack player if smaller, otherwise run away.
+    debugger;
+    if (blob.radius > playerBlob.radius) {
+      setSpeedFromDistance(difX, difY, blob);
+    } else {
+      setSpeedFromDistance(blob.x - playerBlob.x, blob.y - playerBlob.y, blob);
+    }
+    preventOutOfBounds(blob);
+  }
 }
 
+function findClosestPlayerBlob(blob) {
+  let closestBlob = player.blobs[0];
+  let minBlobDist;
+  for (let i = 0; i < player.blobs.length; i++) {
+    let playerBlob = player.blobs[i];
+    if (playerBlob.status === 1) {
+      let difX = blob.x - playerBlob.x;
+      let difY = blob.y - playerBlob.y;
+      let L = Math.sqrt(difX*difX + difY*difY);
+
+      if (L < minBlobDist || minBlobDist === undefined) {
+        closestBlob = playerBlob;
+        minBlobDist = L;
+      }
+    }
+  }
+  return closestBlob;
+}
+
+function findClosestBall(blob) {
+  if (balls.length > 0) {
+    let closestBall = balls[0];
+    let minBallDist;
+    for (let i = 0; i < balls.length; i++) {
+      let ball = balls[i];
+      let difX = blob.x - ball.x;
+      let difY = blob.y - ball.y;
+      let L = Math.sqrt(difX*difX + difY*difY);
+
+      if (L < minBallDist || minBallDist === undefined) {
+        closestBall = ball;
+        minBallDist = L;
+      }
+    }
+    return closestBall;
+  }
+}
+
+
+// Collision detection working.
 function enemyBallCollisionDetection() {
   for (let j = 0; j < balls.length; j++) {
     let ball = balls[j];
@@ -261,7 +327,7 @@ function enemyBallCollisionDetection() {
             ball.x = getRandomInt(ballRadius + 1, canvas.width - ballRadius - 1);
             ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
             enemyBlob.eat();
-            if (enemyPlayer.score === 40) {
+            if (enemyPlayer.score === 120) {
               alert("THE ENEMY OVERWHELMED YOU!");
               document.location.reload();
             }
@@ -312,12 +378,13 @@ function splitCells() {
   let splittable = true;
   for (let i = 0; i < player.blobs.length; i++) {
     let blob = player.blobs[i];
-    if (blob.radius / 2 < 30) {
+    if (blob.radius / 2 < 20) {
       splittable = false;
     }
   }
   if (splittable) {
-    for (let i = 0; i < player.blobs.length; i++) {
+    let totalCurrentBlobs = player.blobs.length;
+    for (let i = 0; i < totalCurrentBlobs; i++) {
       let blob = player.blobs[i];
       if (blob.status === 1) {
         blob.split();

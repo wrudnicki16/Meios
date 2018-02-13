@@ -26,8 +26,8 @@ class Blob {
     this.ejecting = ejecting;
     this.radius = blobRadius;
     this.reformable = false;
-    this.blobIncr = 5;
-    this.speedDcr = 1 / blobRadius;
+    this.blobIncr = 2;
+    this.speedDcr = 1 / (blobRadius * 2);
     setTimeout(() => { this.reformable = true;}, 1000);
   }
 
