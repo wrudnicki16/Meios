@@ -47,7 +47,6 @@ class Blob extends SuperBlob {
     this.player.score++;
     this.radius += this.blobIncr;
     this.maxSpeed -= this.speedDcr;
-    debugger;
   }
 
   split() {
@@ -55,9 +54,7 @@ class Blob extends SuperBlob {
       this.status = 0;
       let speedMultiplierX = this.dx / Math.abs(this.dx) * this.radius;
       let speedMultiplierY = this.dy / Math.abs(this.dy) * this.radius;
-      if (this.dx > 0) {
-
-      }
+      debugger;
       let originBlob = new Blob(this.x, this.y, this.dx, this.dy, this.maxSpeed, this.player, this.radius / 2, this);
       let ejectBlob = new Blob(this.x + speedMultiplierX,
                                this.y + speedMultiplierY, speedMultiplierX, speedMultiplierY,

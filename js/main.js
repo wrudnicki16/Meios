@@ -2,6 +2,7 @@ let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 
 // starting off with blob's x and y position
+
 let relMouseX = 0;
 let relMouseY = 0;
 let startX = canvas.width / 2;
@@ -20,6 +21,7 @@ let balls = [];
 let player = new Player("Wyatt");
 let superBlob = new SuperBlob(maxSpeed, player);
 let oneBlob = new Blob(startX, startY, dx, dy, maxSpeed, player, blobRadius, null);
+let spaceScheduled = false; let lastSpaceEvent;
 player.blobs.push(oneBlob);
 
 debugger;
@@ -175,11 +177,26 @@ function numBlobsShowing(curPlayer) {
       count++;
     }
   }
+  debugger;
   return count;
 }
 
+// function findOtherShowingBlobs(blobIndex, blobs) {
+//   let otherShowingBlobs = [];
+//   for (let i = 0; i < blobs.length; i++) {
+//     let blob = blobs[i];
+//     if (i !== blobIndex && blob.status === 1) {
+//       otherShowingBlobs.push(blob);
+//     }
+//   }
+//   return otherShowingBlobs;
+//
+// }
+
 function preventBlobCollision(blob, blobIndex) {
-  for (let i = 0; i < numBlobsShowing(player); i++) {
+
+  // let otherShowingBlobs = findOtherShowingBlobs(blobIndex, player.blobs);
+  for (let i = 0; i < player.blobs.length; i++) {
     if (i !== blobIndex) {
       let compareBlob = player.blobs[i];
       if (blob.status === 1 && compareBlob.status === 1) {
@@ -203,18 +220,11 @@ function preventBlobCollision(blob, blobIndex) {
             blob.y += difY*step/2;
           }
         }
-        // if ((blob.x + blob.radius > compareBlob.x - compareBlob.radius &&
-        //     blob.x - blob.radius < compareBlob.x + compareBlob.radius) &&
-        //    (blob.y + blob.radius > compareBlob.y - compareBlob.radius &&
-        //     blob.y - blob.radius < compareBlob.y + compareBlob.radius)) {
-        //   blob.dx = 0;
-        //   blob.dy = 0;
-        // }
       }
     }
+
   }
 }
-
 
 function ballCollisionDetection() {
   for (let i = 0; i < player.blobs.length; i++) {
@@ -237,6 +247,26 @@ function ballCollisionDetection() {
   }
 }
 
+
+
+function splitCells() {
+  let splittable = true;
+  for (let i = 0; i < player.blobs.length; i++) {
+    let blob = player.blobs[i];
+    if (blob.radius / 2 < 30) {
+      splittable = false;
+    }
+  }
+  if (splittable) {
+    for (let i = 0; i < player.blobs.length; i++) {
+      let blob = player.blobs[i];
+      if (blob.status === 1) {
+        blob.split();
+      }
+    }
+  }
+}
+
 // ################# ASYNCHRONICITY #################
 
 function handleMouseMove(e) {
@@ -248,10 +278,16 @@ function handleMouseMove(e) {
 
 function handleKeyDown(e) {
   if (e.keyCode === 32) {
-    for (let i = 0; i < player.blobs.length; i++) {
-      let blob = player.blobs[i];
-      blob.split();
+    e.preventDefault();
+    lastSpaceEvent = e;
+    if (!spaceScheduled) {
+      spaceScheduled = true;
+      setTimeout(function () {
+        spaceScheduled = false;
+        splitCells(lastSpaceEvent);
+      }, 100);
     }
+    splitCells();
   }
 }
 
