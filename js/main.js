@@ -21,9 +21,10 @@ let balls = [];
 let player = new Player("Wyatt");
 let oneBlob = new Blob(startX, startY, dx, dy, maxSpeed, player, blobRadius, null);
 let spaceScheduled = false; let lastSpaceEvent;
+let enemyDetectionEventScheduled = false;
 player.blobs.push(oneBlob);
 let enemyPlayer = new Player("Enemy");
-let enemyBlob = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
+let enemyBlob = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius * 2, null);
 
 debugger;
 
@@ -92,7 +93,9 @@ function drawBlobs() {
       drawBlob(blob);
     }
   }
-  drawEnemyBlob(enemyBlob);
+  if (enemyBlob.status === 1) {
+    drawEnemyBlob(enemyBlob);
+  }
 }
 
 function drawScore() {
@@ -108,6 +111,7 @@ function draw() {
   drawScore();
   ballCollisionDetection();
   enemyBallCollisionDetection();
+  enemyBlobDetection(enemyBlob);
 
   for (let i = 0; i < player.blobs.length; i++) {
     let blob = player.blobs[i];
@@ -135,7 +139,6 @@ function draw() {
 // ############### RANDOM HELPERS ###################
 
 function setSpeed(blob, index) {
-  let L = Math.sqrt(distX*distX + distY*distY);
   if (distX > 120) {
     blob.dx = blob.maxSpeed;
   } else if (distX < -120) {
@@ -153,6 +156,8 @@ function setSpeed(blob, index) {
   preventBlobCollision(blob, index);
   preventOutOfBounds(blob);
 }
+
+// ################# COLLISION DETECTION ####################
 
 function preventOutOfBounds(blob) {
   // Out of bounds
@@ -172,8 +177,6 @@ function preventOutOfBounds(blob) {
     difX /= L; difY /= L;
     blob.x += difX*step*2; blob.y += difY*step*2;
   }
-
-
 }
 
 function preventBlobCollision(blob, blobIndex) {
@@ -229,6 +232,26 @@ function ballCollisionDetection() {
     }
   }
 }
+
+// ################### CALCULATING AI MOVEMENT ################
+
+// function setEnemySpeed(blob) {
+//   let distXToPlayer =
+//   if (condition) {
+//
+//   }
+// }
+
+// function findClosestBlob(enemyBlob) {
+//   for (let i = 0; i < player.blobs.length; i++) {
+//     let playerBlob =
+//   }
+// }
+
+function findClosestBall() {
+
+}
+
 function enemyBallCollisionDetection() {
   for (let j = 0; j < balls.length; j++) {
     let ball = balls[j];
@@ -247,7 +270,43 @@ function enemyBallCollisionDetection() {
   }
 }
 
+function enemyBlobDetection(blob) {
+  if (blob.status === 1) {
+    for (let i = 0; i < player.blobs.length; i++) {
+      let playerBlob = player.blobs[i];
+      if (playerBlob.status === 1) {
+        let difX = blob.x - playerBlob.x;
+        let difY = blob.y - playerBlob.y;
+        let L = Math.sqrt(difX*difX + difY*difY);
+        let step = blob.radius + playerBlob.radius - L;
 
+        if (step > (playerBlob.radius * 1.2)) {
+          if (blob.radius > playerBlob.radius) {
+            alert("THE ENEMY OVERWHELMED YOU!");
+            document.location.reload();
+          } else {
+            if (!enemyDetectionEventScheduled) {
+              blob.status = 0;
+              enemyDetectionEventScheduled = true;
+              setTimeout(() => enemyDetectCallback(blob, playerBlob), 50);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function enemyDetectCallback(blob, playerBlob) {
+  enemyDetectionEventScheduled = false;
+  playerBlob.eatOtherBlob(blob);
+}
+
+
+
+
+
+// ############## ASYNCHRONICITY HELPER #################
 
 function splitCells() {
   let splittable = true;
@@ -266,6 +325,10 @@ function splitCells() {
     }
   }
 }
+
+// ################# ENEMY ASYNCHRONICITY ##################
+
+
 
 // ################# PLAYER ASYNCHRONICITY #################
 

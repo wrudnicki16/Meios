@@ -41,6 +41,16 @@ class Blob {
     this.maxSpeed -= this.speedDcr;
   }
 
+  eatOtherBlob(blob) {
+    if (this.parentBlob) {
+      this.parentBlob.radius += Math.round(blob.radius / 2);
+      this.parentBlob.maxSpeed -= this.speedDcr;
+    }
+    this.player.score += Math.round(blob.radius / 2);
+    this.radius += Math.round(blob.radius / 2);
+    this.maxSpeed -= this.speedDcr;
+  }
+
   split() {
     if (this.radius / 2 > 20) {
       this.status = 0;
