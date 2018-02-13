@@ -6,13 +6,6 @@ class Ball {
   }
 }
 
-class SuperBlob {
-  constructor(speed, player) {
-    this.oneBlobSpeed = speed;
-    this.player = player;
-  }
-}
-
 class Player {
   constructor(name) {
     this.blobs = [];
@@ -21,10 +14,9 @@ class Player {
   }
 }
 
-class Blob extends SuperBlob {
+class Blob {
   constructor(x, y, dx, dy, parentSpeed, player, blobRadius, parentBlob, ejecting = false) {
-    super(parentSpeed, player);
-    // how to slow speed down for bigger blobs?
+    this.player = player;
     this.x = x;
     this.y = y;
     this.dx = dx;
@@ -50,16 +42,18 @@ class Blob extends SuperBlob {
   }
 
   split() {
-    if (this.radius / 2 > 30) {
+    if (this.radius / 2 > 20) {
       this.status = 0;
-      let speedMultiplierX = this.dx / Math.abs(this.dx) * this.radius;
-      let speedMultiplierY = this.dy / Math.abs(this.dy) * this.radius;
-      debugger;
+      let normalizedDX = this.dx / Math.abs(this.dx);
+      let normalizedDY = this.dy / Math.abs(this.dy);
+      let displacementX = normalizedDX * this.radius;
+      let displacementY = normalizedDY * this.radius;
+      let speedMultiplierX = displacementX / 2;
+      let speedMultiplierY = displacementY / 2;
       let originBlob = new Blob(this.x, this.y, this.dx, this.dy, this.maxSpeed, this.player, this.radius / 2, this);
-      let ejectBlob = new Blob(this.x + speedMultiplierX,
-                               this.y + speedMultiplierY, speedMultiplierX, speedMultiplierY,
+      let ejectBlob = new Blob(this.x + displacementX,
+                               this.y + displacementY, speedMultiplierX, speedMultiplierY,
                                this.maxSpeed, this.player, this.radius / 2, this, true);
-      // Do animation here before adding to
       this.player.blobs.push(originBlob);
       this.player.blobs.push(ejectBlob);
     }
@@ -67,13 +61,13 @@ class Blob extends SuperBlob {
 
   slowToMaxSpeed() {
     if (Math.abs(this.dx) <= Math.abs(this.maxSpeed) &&
-        Math.abs(this.dy <= Math.abs(this.maxSpeed))) {
+        Math.abs(this.dy) <= Math.abs(this.maxSpeed)) {
       this.ejecting = false;
     } else {
-      if (Math.abs(this.dx > Math.abs(this.maxSpeed))) {
+      if (Math.abs(this.dx) > Math.abs(this.maxSpeed)) {
         this.slowX();
       }
-      if (Math.abs(this.dy > Math.abs(this.maxSpeed))) {
+      if (Math.abs(this.dy) > Math.abs(this.maxSpeed)) {
         this.slowY();
       }
     }
@@ -81,17 +75,17 @@ class Blob extends SuperBlob {
 
   slowX() {
     if (this.dx > 0) {
-      this.dx -= 5;
+      this.dx -= 2;
     } else {
-      this.dx += 5;
+      this.dx += 2;
     }
   }
 
   slowY() {
     if (this.dy > 0) {
-      this.dy -= 5;
+      this.dy -= 2;
     } else {
-      this.dy += 5;
+      this.dy += 2;
     }
   }
 

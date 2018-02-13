@@ -7,7 +7,7 @@ let relMouseX = 0;
 let relMouseY = 0;
 let startX = canvas.width / 2;
 let startY = canvas.height / 2;
-let blobRadius = 30;
+let blobRadius = 20;
 let ballRadius = 10;
 let inertia = 30;
 let maxSpeed = 4;
@@ -19,10 +19,11 @@ let score = 0;
 let numBalls = 10;
 let balls = [];
 let player = new Player("Wyatt");
-let superBlob = new SuperBlob(maxSpeed, player);
 let oneBlob = new Blob(startX, startY, dx, dy, maxSpeed, player, blobRadius, null);
 let spaceScheduled = false; let lastSpaceEvent;
 player.blobs.push(oneBlob);
+let enemyPlayer = new Player("Enemy");
+let enemyBlob = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
 
 debugger;
 
@@ -44,15 +45,6 @@ function makeBall() {
   balls.push(newBall);
 }
 
-// ############### DEFINE CLASSES #####################
-
-// function SuperBlob(speed, player) {
-//   this.oneBlobSpeed = speed;
-//   this.player = player;
-//   this.maxRadius = blobRadius;
-// }
-
-
 
 // ################# DRAWING #####################
 
@@ -68,6 +60,17 @@ function drawBalls() {
       ctx.closePath();
     }
   }
+}
+
+function drawEnemyBlob(blob) {
+  ctx.beginPath();
+  ctx.arc(blob.x, blob.y, blob.radius, 0, Math.PI*2);
+  ctx.fillStyle = "#d86363";
+  ctx.fill();
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = "#c00a0a";
+  ctx.stroke();
+  ctx.closePath();
 }
 
 function drawBlob(blob) {
@@ -89,6 +92,7 @@ function drawBlobs() {
       drawBlob(blob);
     }
   }
+  drawEnemyBlob(enemyBlob);
 }
 
 function drawScore() {
@@ -103,12 +107,14 @@ function draw() {
   drawBalls();
   drawScore();
   ballCollisionDetection();
+  enemyBallCollisionDetection();
 
   for (let i = 0; i < player.blobs.length; i++) {
     let blob = player.blobs[i];
     distX = relMouseX - blob.x;
     distY = relMouseY - blob.y;
     if (blob.ejecting) {
+      debugger;
       blob.slowToMaxSpeed();
       preventOutOfBounds(blob);
 
@@ -170,30 +176,6 @@ function preventOutOfBounds(blob) {
 
 }
 
-function numBlobsShowing(curPlayer) {
-  let count = 0;
-  for (let i = 0; i < curPlayer.blobs.length; i++) {
-    let blob = curPlayer.blobs[i];
-    if (blob.status === 1) {
-      count++;
-    }
-  }
-  debugger;
-  return count;
-}
-
-// function findOtherShowingBlobs(blobIndex, blobs) {
-//   let otherShowingBlobs = [];
-//   for (let i = 0; i < blobs.length; i++) {
-//     let blob = blobs[i];
-//     if (i !== blobIndex && blob.status === 1) {
-//       otherShowingBlobs.push(blob);
-//     }
-//   }
-//   return otherShowingBlobs;
-//
-// }
-
 function preventBlobCollision(blob, blobIndex) {
 
   // let otherShowingBlobs = findOtherShowingBlobs(blobIndex, player.blobs);
@@ -247,6 +229,23 @@ function ballCollisionDetection() {
     }
   }
 }
+function enemyBallCollisionDetection() {
+  for (let j = 0; j < balls.length; j++) {
+    let ball = balls[j];
+    if (ball.status === 1 && enemyBlob.status === 1) {
+      if ((ball.x - ballRadius > enemyBlob.x - enemyBlob.radius && ball.x + ballRadius < enemyBlob.x + enemyBlob.radius) &&
+          (ball.y - ballRadius > enemyBlob.y - enemyBlob.radius && ball.y + ballRadius < enemyBlob.y + enemyBlob.radius)) {
+            ball.x = getRandomInt(ballRadius + 1, canvas.width - ballRadius - 1);
+            ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
+            enemyBlob.eat();
+            if (enemyPlayer.score === 40) {
+              alert("THE ENEMY OVERWHELMED YOU!");
+              document.location.reload();
+            }
+          }
+    }
+  }
+}
 
 
 
@@ -268,7 +267,7 @@ function splitCells() {
   }
 }
 
-// ################# ASYNCHRONICITY #################
+// ################# PLAYER ASYNCHRONICITY #################
 
 function handleMouseMove(e) {
   let mouseX = e.pageX;
