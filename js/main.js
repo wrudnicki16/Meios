@@ -22,24 +22,24 @@ let player = new Player("Wyatt");
 let oneBlob = new Blob(startX, startY, dx, dy, maxSpeed, player, blobRadius, null);
 let spaceScheduled = false; let lastSpaceEvent;
 let enemyDetectionEventScheduled = false;
-let enemyDecisionMade = false;
+let enemyDecisionMade = [false, false, false, false];
 player.blobs.push(oneBlob);
 
 let enemyPlayer = new Player("Enemy");
 
-// let enemyPlayer1 = new Player("Enemy");
-// let enemyPlayer2 = new Player("Enemy");
-// let enemyPlayer3 = new Player("Enemy");
-// let enemyPlayer4 = new Player("Enemy");
-let enemyBlob = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
+let enemyPlayer1 = new Player("Enemy");
+let enemyPlayer2 = new Player("Enemy");
+let enemyPlayer3 = new Player("Enemy");
+let enemyPlayer4 = new Player("Enemy");
+// let enemyBlob = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
 
-// let enemyBlobs = [];
-// let enemyBlob1 = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
-// let enemyBlob2 = new Blob(startX + (startX / 2), startY / 2, 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
-// let enemyBlob3 = new Blob(startX / 2, startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
-// let enemyBlob4 = new Blob(startX + (startX / 2), startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer, blobRadius, null);
-// enemyBlobs.push(enemyBlob1); enemyBlobs.push(enemyBlob2);
-// enemyBlobs.push(enemyBlob3); enemyBlobs.push(enemyBlob4);
+let enemyBlobs = [];
+let enemyBlob1 = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer1, blobRadius, null, "#d86363", "#c00a0a");
+let enemyBlob2 = new Blob(startX + (startX / 2), startY / 2, 0, 0, maxSpeed, enemyPlayer2, blobRadius, null, "#ad44d0", "#77079c");
+let enemyBlob3 = new Blob(startX / 2, startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer3, blobRadius, null, "#0095dd", "#37689a");
+let enemyBlob4 = new Blob(startX + (startX / 2), startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer4, blobRadius, null, "#cee418", "#899200");
+enemyBlobs.push(enemyBlob1); enemyBlobs.push(enemyBlob2);
+enemyBlobs.push(enemyBlob3); enemyBlobs.push(enemyBlob4);
 
 debugger;
 
@@ -57,7 +57,7 @@ function getRandomInt(min, max) {
 function makeBall() {
   let ballX = getRandomInt(ballRadius, canvas.width - ballRadius - 1);
   let ballY = getRandomInt(ballRadius, canvas.height - ballRadius - 1);
-  let newBall = { x: ballX, y: ballY, status: 1 };
+  let newBall = { x: ballX, y: ballY, status: 1, taken: null };
   balls.push(newBall);
 }
 
@@ -78,13 +78,13 @@ function drawBalls() {
   }
 }
 
-function drawEnemyBlob(blob) {
+function drawEnemyBlob(blob, colorFill, colorStroke) {
   ctx.beginPath();
   ctx.arc(blob.x, blob.y, blob.radius, 0, Math.PI*2);
-  ctx.fillStyle = "#d86363";
+  ctx.fillStyle = colorFill;
   ctx.fill();
   ctx.lineWidth = 5;
-  ctx.strokeStyle = "#c00a0a";
+  ctx.strokeStyle = colorStroke;
   ctx.stroke();
   ctx.closePath();
 }
@@ -108,8 +108,11 @@ function drawBlobs() {
       drawBlob(blob);
     }
   }
-  if (enemyBlob.status === 1) {
-    drawEnemyBlob(enemyBlob);
+  for (let i = 0; i < enemyBlobs.length; i++) {
+    let enemyBlob = enemyBlobs[i];
+    if (enemyBlob.status === 1) {
+      drawEnemyBlob(enemyBlob, enemyBlob.colorFill, enemyBlob.colorStroke);
+    }
   }
 }
 
@@ -125,8 +128,12 @@ function draw() {
   drawBalls();
   drawScore();
   ballCollisionDetection();
-  enemyBallCollisionDetection(enemyBlob);
-  enemyBlobDetection(enemyBlob);
+
+  for (let i = 0; i < enemyBlobs.length; i++) {
+    let enemyBlob = enemyBlobs[i];
+    enemyBallCollisionDetection(enemyBlob);
+    enemyBlobDetection(enemyBlob);
+  }
 
   for (let i = 0; i < player.blobs.length; i++) {
     let blob = player.blobs[i];
@@ -143,16 +150,44 @@ function draw() {
     blob.x += blob.dx;
     blob.y += blob.dy;
   }
-  if (!enemyDecisionMade) {
-    enemyDecisionMade = true;
-    setTimeout(() => {
-      enemyDecisionMade = false;
-      setEnemySpeed(enemyBlob);
-    }, 200);
+
+  for (let i = 0; i < enemyBlobs.length; i++) {
+    let enemyBlob = enemyBlobs[i];
+
+
+    if (!enemyDecisionMade[i]) {
+      enemyDecisionMade[i] = true;
+      if (i === 0) {
+        setTimeout(() => {
+          enemyDecisionMade[i] = false;
+          setSmarterEnemySpeed(enemyBlob);
+        }, 150);
+      } else if (i === 1) {
+        setTimeout(() => {
+          enemyDecisionMade[i] = false;
+          setScaredEnemySpeed(enemyBlob);
+        }, 175);
+      } else if (i === 2) {
+        setTimeout(() => {
+          enemyDecisionMade[i] = false;
+          setGreedyEnemySpeed(enemyBlob);
+        }, 115);
+      } else if (i === 3) {
+        setTimeout(() => {
+          enemyDecisionMade[i] = false;
+          setDumbEnemySpeed(enemyBlob);
+        }, 135);
+      }
+    }
+    // preventOutOfBounds(enemyBlob); // unless blob is the dumb blob!*******************
+    if (i !== 3) {
+      preventOutOfBounds(enemyBlob);
+    }
+
+
+    enemyBlob.x += enemyBlob.dx;
+    enemyBlob.y += enemyBlob.dy;
   }
-  preventOutOfBounds(enemyBlob);
-  enemyBlob.x += enemyBlob.dx;
-  enemyBlob.y += enemyBlob.dy;
 
   requestAnimationFrame(draw);
 }
@@ -261,7 +296,7 @@ function ballCollisionDetection() {
 // ################### CALCULATING AI MOVEMENT ################
 
 // Need to check ^
-function setEnemySpeed(blob) {
+function setSmarterEnemySpeed(blob) {
   let playerBlob = findClosestPlayerBlob(blob);
   let difX = playerBlob.x - blob.x;
   let difY = playerBlob.y - blob.y;
@@ -276,20 +311,68 @@ function setEnemySpeed(blob) {
     // if a quarter of the distance to player, go for food.
 
     if (blob.radius > playerBlob.radius) {
-      if (foodDistance > L / 4) {
+      if (foodDistance > L) {
         setSpeedFromDistance(difX, difY, blob);
       }
     }
-    preventOutOfBounds(blob);
   } else {
     // attack player if smaller, otherwise increase distance from player.
-    debugger;
     if (blob.radius > playerBlob.radius) {
       setSpeedFromDistance(difX, difY, blob);
     } else {
       setSpeedFromDistance(blob.x - playerBlob.x, blob.y - playerBlob.y, blob);
     }
+  }
+  preventOutOfBounds(blob);
+}
+
+function setGreedyEnemySpeed(blob) {
+  let playerBlob = findClosestPlayerBlob(blob);
+  let difX = playerBlob.x - blob.x;
+  let difY = playerBlob.y - blob.y;
+  let L = Math.sqrt(difX*difX + difY*difY);
+  let food = findClosestFoodAndDistance(blob).food;
+  let foodDifX = food.x - blob.x;
+  let foodDifY = food.y - blob.y;
+  // always go for food
+  setSpeedFromDistance(foodDifX, foodDifY, blob);
+  preventOutOfBounds(blob);
+}
+
+function setScaredEnemySpeed(blob) {
+  let playerBlob = findClosestPlayerBlob(blob);
+  let difX = playerBlob.x - blob.x;
+  let difY = playerBlob.y - blob.y;
+  let L = Math.sqrt(difX*difX + difY*difY);
+  let { food, foodDistance } = findClosestFoodAndDistance(blob);
+  let foodDifX = food.x - blob.x;
+  let foodDifY = food.y - blob.y;
+
+  if (L > 300) {
+    setSpeedFromDistance(foodDifX, foodDifY, blob);
     preventOutOfBounds(blob);
+  } else {
+    if (blob.radius > playerBlob.radius) {
+
+      setSpeedFromDistance(foodDifX, foodDifY, blob);
+    } else {
+      // RUN AWAY!
+      setSpeedFromDistance(blob.x - playerBlob.x, blob.y - playerBlob.y, blob);
+    }
+    preventOutOfBounds(blob);
+  }
+}
+
+function setDumbEnemySpeed(blob) {
+  if (blob.dx === 0) {
+    blob.dx = 4;
+    blob.dy = 4;
+  }
+  if (blob.x + blob.radius > canvas.width || blob.x - blob.radius < 0) {
+      blob.dx = -blob.dx;
+  }
+  if (blob.y + blob.radius > canvas.height || blob.y - blob.radius < 0) {
+    blob.dy = -blob.dy;
   }
 }
 
@@ -318,15 +401,20 @@ function findClosestFoodAndDistance(blob) {
     let minBallDist;
     for (let i = 0; i < balls.length; i++) {
       let ball = balls[i];
-      let difX = blob.x - ball.x;
-      let difY = blob.y - ball.y;
-      let L = Math.sqrt(difX*difX + difY*difY);
+      if (ball.taken === null || ball.taken === blob) {
+        let difX = blob.x - ball.x;
+        let difY = blob.y - ball.y;
+        let L = Math.sqrt(difX*difX + difY*difY);
 
-      if (L < minBallDist || minBallDist === undefined) {
-        closestBall = ball;
-        minBallDist = L;
+        if (L < minBallDist || minBallDist === undefined) {
+          closestBall = ball;
+          minBallDist = L;
+        }
+      } else {
+        debugger;
       }
     }
+    closestBall.taken = blob;
     return { food: closestBall, foodDistance: minBallDist };
   }
 }
@@ -341,6 +429,7 @@ function enemyBallCollisionDetection(blob) {
           (ball.y - ballRadius > blob.y - blob.radius && ball.y + ballRadius < blob.y + blob.radius)) {
             ball.x = getRandomInt(ballRadius + 1, canvas.width - ballRadius - 1);
             ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
+            ball.taken = null;
             blob.eat();
             if (blob.player.score === 120) {
               alert("THE ENEMY OVERWHELMED YOU!");
@@ -361,7 +450,7 @@ function enemyBlobDetection(blob) {
         let L = Math.sqrt(difX*difX + difY*difY);
         let step = blob.radius + playerBlob.radius - L;
 
-        if (step > (playerBlob.radius * 1.2)) {
+        if (step > (playerBlob.radius * 0.9) || step > (blob.radius * 0.9)) {
           if (blob.radius > playerBlob.radius) {
             alert("THE ENEMY OVERWHELMED YOU!");
             document.location.reload();

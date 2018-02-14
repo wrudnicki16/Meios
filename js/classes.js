@@ -15,12 +15,15 @@ class Player {
 }
 
 class Blob {
-  constructor(x, y, dx, dy, parentSpeed, player, blobRadius, parentBlob, ejecting = false) {
+  constructor(x, y, dx, dy, parentSpeed, player, blobRadius, parentBlob,
+              colorFill, colorStroke, ejecting = false) {
     this.player = player;
     this.x = x;
     this.y = y;
     this.dx = dx;
     this.dy = dy;
+    this.colorFill = colorFill;
+    this.colorStroke = colorStroke;
     this.maxSpeed = parentSpeed + 1;
     this.status = 1;
     this.ejecting = ejecting;
@@ -56,21 +59,23 @@ class Blob {
       this.status = 0;
       let normalizedDX = this.dx / Math.abs(this.dx);
       let normalizedDY = this.dy / Math.abs(this.dy);
-      let displacementX = normalizedDX * this.radius;
-      let displacementY = normalizedDY * this.radius;
-      let speedMultiplierX = displacementX / 2;
-      let speedMultiplierY = displacementY / 2;
-      let originBlob = new Blob(this.x, this.y, this.dx, this.dy, this.maxSpeed, this.player, this.radius / 2, this);
+      let displacementX = normalizedDX * this.radius * 2;
+      let displacementY = normalizedDY * this.radius * 2;
+      let speedMultiplierX = displacementX / 4;
+      let speedMultiplierY = displacementY / 4;
+      let originBlob = new Blob(this.x, this.y, this.dx, this.dy, this.maxSpeed, this.player, this.radius / 2, this, this.colorFill, this.colorStroke);
       let ejectBlob = new Blob(this.x + displacementX,
                                this.y + displacementY, speedMultiplierX, speedMultiplierY,
-                               this.maxSpeed, this.player, this.radius / 2, this, true);
+                               this.maxSpeed, this.player, this.radius / 2, this,
+                               this.colorFill, this.colorStroke, true);
       this.player.blobs.push(originBlob);
       this.player.blobs.push(ejectBlob);
     }
   }
 
   slowToMaxSpeed() {
-    if (Math.abs(this.dx) <= Math.abs(this.maxSpeed) &&
+    debugger;
+    if (Math.abs(this.dx) <=  Math.abs(this.maxSpeed) &&
         Math.abs(this.dy) <= Math.abs(this.maxSpeed)) {
       this.ejecting = false;
     } else {
