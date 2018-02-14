@@ -303,7 +303,7 @@ function setSmarterEnemySpeed(blob) {
   let L = Math.sqrt(difX*difX + difY*difY);
   let { food, foodDistance } = findClosestFoodAndDistance(blob);
 
-  if (L > 150) {
+  if (L > blob.radius * 3) {
     let foodDifX = food.x - blob.x;
     let foodDifY = food.y - blob.y;
     setSpeedFromDistance(foodDifX, foodDifY, blob);
@@ -348,19 +348,13 @@ function setScaredEnemySpeed(blob) {
   let foodDifX = food.x - blob.x;
   let foodDifY = food.y - blob.y;
 
-  if (L > 300) {
+  if (L > blob.radius * 5) {
     setSpeedFromDistance(foodDifX, foodDifY, blob);
-    preventOutOfBounds(blob);
   } else {
-    if (blob.radius > playerBlob.radius) {
-
-      setSpeedFromDistance(foodDifX, foodDifY, blob);
-    } else {
       // RUN AWAY!
-      setSpeedFromDistance(blob.x - playerBlob.x, blob.y - playerBlob.y, blob);
-    }
-    preventOutOfBounds(blob);
+    setSpeedFromDistance(blob.x - playerBlob.x, blob.y - playerBlob.y, blob);
   }
+  preventOutOfBounds(blob);
 }
 
 function setDumbEnemySpeed(blob) {
