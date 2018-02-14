@@ -37,7 +37,7 @@ let enemyBlobs = [];
 let enemyBlob1 = new Blob(startX / 2, startY / 2, 0, 0, maxSpeed, enemyPlayer1, blobRadius, null, "#d86363", "#c00a0a");
 let enemyBlob2 = new Blob(startX + (startX / 2), startY / 2, 0, 0, maxSpeed, enemyPlayer2, blobRadius, null, "#ad44d0", "#77079c");
 let enemyBlob3 = new Blob(startX / 2, startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer3, blobRadius, null, "#0095dd", "#37689a");
-let enemyBlob4 = new Blob(startX + (startX / 2), startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer4, blobRadius, null, "#cee418", "#899200");
+let enemyBlob4 = new Blob(startX + (startX / 2), startY + (startY / 2), 0, 0, maxSpeed, enemyPlayer4, blobRadius, null, "#d86363", "#c00a0a");
 enemyBlobs.push(enemyBlob1); enemyBlobs.push(enemyBlob2);
 enemyBlobs.push(enemyBlob3); enemyBlobs.push(enemyBlob4);
 
@@ -157,7 +157,7 @@ function draw() {
 
     if (!enemyDecisionMade[i]) {
       enemyDecisionMade[i] = true;
-      if (i === 0) {
+      if (i === 0 || i === 3) {
         setTimeout(() => {
           enemyDecisionMade[i] = false;
           setSmarterEnemySpeed(enemyBlob);
@@ -303,7 +303,7 @@ function setSmarterEnemySpeed(blob) {
   let L = Math.sqrt(difX*difX + difY*difY);
   let { food, foodDistance } = findClosestFoodAndDistance(blob);
 
-  if (L > blob.radius * 3) {
+  if (L > 50 + blob.radius * 3) {
     let foodDifX = food.x - blob.x;
     let foodDifY = food.y - blob.y;
     setSpeedFromDistance(foodDifX, foodDifY, blob);
@@ -348,7 +348,7 @@ function setScaredEnemySpeed(blob) {
   let foodDifX = food.x - blob.x;
   let foodDifY = food.y - blob.y;
 
-  if (L > blob.radius * 5) {
+  if (L > 100 + blob.radius * 2) {
     setSpeedFromDistance(foodDifX, foodDifY, blob);
   } else {
       // RUN AWAY!
