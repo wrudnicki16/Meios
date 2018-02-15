@@ -1,11 +1,3 @@
-class Ball {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-    this.status = 1;
-  }
-}
-
 class Player {
   constructor(name) {
     this.blobs = [];
