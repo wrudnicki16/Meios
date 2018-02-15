@@ -7,6 +7,10 @@ function main() {
   let ctx = canvas.getContext("2d");
 
   // starting off with blob's x and y position
+  let myWinningModal = document.getElementById("myWinningModal");
+  let myLosingModal = document.getElementById("myLosingModal");
+
+
 
   let relMouseX = 0;
   let relMouseY = 0;
@@ -28,6 +32,7 @@ function main() {
   let spaceScheduled = false; let lastSpaceEvent;
   let enemyDetectionEventScheduled = false;
   let enemyDecisionMade = [false, false, false, false];
+  let gameOver = false;
   player.blobs.push(oneBlob);
 
   let enemyPlayer = new Player("Enemy");
@@ -288,8 +293,9 @@ function main() {
             ball.x = getRandomInt(ballRadius + 1, canvas.width - ballRadius - 1);
             ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
             blob.eat();
-            if (player.score >= 200) {
+            if (player.score >= 200 && !gameOver) {
               alert("CONGRATULATIONS, YOU'VE WON!");
+              gameOver = true;
               document.location.reload();
             }
           }
@@ -430,8 +436,9 @@ function main() {
           ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
           ball.taken = null;
           blob.eat();
-          if (blob.player.score >= 120) {
+          if (blob.player.score >= 120 && !gameOver) {
             alert("You were OVERWHELMED by the enemy!");
+            gameOver = true;
             document.location.reload();
           }
         }
@@ -450,13 +457,15 @@ function main() {
           let step = blob.radius + playerBlob.radius - L;
 
           if (step > (playerBlob.radius * 0.9) || step > (blob.radius * 0.9)) {
-            if (blob.radius > playerBlob.radius) {
+            if (blob.radius > playerBlob.radius && !gameOver) {
               alert("You were OVERWHELMED by the enemy!");
+              gameOver = true;
               document.location.reload();
             } else {
               if (!enemyDetectionEventScheduled) {
                 blob.status = 0;
-                if (numEnemiesAlive() === 0) {
+                if (numEnemiesAlive() === 0 && !gameOver) {
+                  gameOver = true;
                   alert("CONGRATULATIONS, YOU'VE WON!");
                   document.location.reload();
                 }
