@@ -1,5 +1,7 @@
 # Meios
 
+[Live website here!](https://wrudnicki16.github.io/Meios/)
+
 ## Overview
 Meios is a game oriented around a little cell trying to eat its way to the top of the food chain. Along the way there will be other cells trying to eat you to add to their size, you must eat the food scattered around the map and eat other smaller cells at the opportune moment.
 
