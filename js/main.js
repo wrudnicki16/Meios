@@ -10,6 +10,11 @@ function main() {
   let myWinningModal = document.getElementById("myWinningModal");
   let myLosingModal = document.getElementById("myLosingModal");
 
+  let myWinningBtn = document.getElementById("myWinningBtn");
+  let myLosingBtn = document.getElementById("myLosingBtn");
+
+  myWinningBtn.onclick = reset;
+  myLosingBtn.onclick = reset;
 
 
   let relMouseX = 0;
@@ -200,8 +205,6 @@ function main() {
     }
     if (!gameOver) {
       window.myRequest = requestAnimationFrame(draw);
-    } else {
-      cancelAnimationFrame(window.myRequest);
     }
   }
 
@@ -298,8 +301,7 @@ function main() {
             blob.eat();
             if (player.score >= 200 && !gameOver) {
               gameOver = true;
-              alert("CONGRATULATIONS, YOU'VE WON!");
-              document.location.reload();
+              myWinningModal.style.display = "block";
             }
           }
         }
@@ -440,9 +442,8 @@ function main() {
           ball.taken = null;
           blob.eat();
           if (blob.player.score >= 120 && !gameOver) {
-            alert("You were OVERWHELMED by the enemy!");
+            myLosingModal.style.display = "block";
             gameOver = true;
-            document.location.reload();
           }
         }
       }
@@ -461,19 +462,14 @@ function main() {
 
           if (step > (playerBlob.radius * 0.9) || step > (blob.radius * 0.9)) {
             if (blob.radius > playerBlob.radius && !gameOver) {
-              alert("hey");
-              reset();
+              myLosingModal.style.display = "block";
               gameOver = true;
-              // alert("You were OVERWHELMED by the enemy!");
-              cancelAnimationFrame(window.myRequest);
-              // document.location.reload();
             } else {
               if (!enemyDetectionEventScheduled) {
                 blob.status = 0;
                 if (numEnemiesAlive() === 0 && !gameOver) {
                   gameOver = true;
-                  alert("CONGRATULATIONS, YOU'VE WON!");
-                  document.location.reload();
+                  myWinningModal.style.display = "block";
                 }
                 for (let j = 0; j < enemyBlobs.length; j++) {
                   let enemyBlob = enemyBlobs[j];
@@ -555,8 +551,10 @@ function main() {
 
   // ################# PLAYER ASYNCHRONICITY #################
   function reset() {
-    document.addEventListener("mousemove", handleMouseMove, false);
-    document.addEventListener("keydown", handleKeyDown, false);
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("keydown", handleKeyDown);
+    myWinningModal.style.display = "none";
+    myLosingModal.style.display = "none";
     main();
   }
 
