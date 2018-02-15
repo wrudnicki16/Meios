@@ -453,6 +453,13 @@ function main() {
             } else {
               if (!enemyDetectionEventScheduled) {
                 blob.status = 0;
+                for (let j = 0; j < enemyBlobs.length; j++) {
+                  let enemyBlob = enemyBlobs[j];
+                  if (enemyBlob.status === 1) {
+                    enemyBlob.radius *= 1.5;
+                  }
+                }
+
                 enemyDetectionEventScheduled = true;
                 setTimeout(() => enemyDetectCallback(blob, playerBlob), 50);
               }
@@ -462,11 +469,29 @@ function main() {
       }
     }
   }
-
   function enemyDetectCallback(blob, playerBlob) {
     enemyDetectionEventScheduled = false;
     playerBlob.eatOtherBlob(blob);
   }
+
+  function enemyPlayerOverlapping(blob) {
+    if (blob.status === 1) {
+      for (let i = 0; i < player.blobs.length; i++) {
+        let playerBlob = player.blobs[i];
+        if (playerBlob.status === 1) {
+          let difX = blob.x - playerBlob.x;
+          let difY = blob.y - playerBlob.y;
+          let L = Math.sqrt(difX*difX + difY*difY);
+          let step = blob.radius + playerBlob.radius - L;
+          if (step > (playerBlob.radius * 0.9) || step > (blob.radius * 0.9)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
 
   // ############## ASYNCHRONICITY HELPER #################
 
