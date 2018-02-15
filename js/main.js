@@ -198,8 +198,11 @@ function main() {
       enemyBlob.x += enemyBlob.dx;
       enemyBlob.y += enemyBlob.dy;
     }
-
-    requestAnimationFrame(draw);
+    if (!gameOver) {
+      window.myRequest = requestAnimationFrame(draw);
+    } else {
+      cancelAnimationFrame(window.myRequest);
+    }
   }
 
   // ############### RANDOM HELPERS ###################
@@ -294,8 +297,8 @@ function main() {
             ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
             blob.eat();
             if (player.score >= 200 && !gameOver) {
-              alert("CONGRATULATIONS, YOU'VE WON!");
               gameOver = true;
+              alert("CONGRATULATIONS, YOU'VE WON!");
               document.location.reload();
             }
           }
@@ -458,9 +461,12 @@ function main() {
 
           if (step > (playerBlob.radius * 0.9) || step > (blob.radius * 0.9)) {
             if (blob.radius > playerBlob.radius && !gameOver) {
-              alert("You were OVERWHELMED by the enemy!");
+              alert("hey");
+              reset();
               gameOver = true;
-              document.location.reload();
+              // alert("You were OVERWHELMED by the enemy!");
+              cancelAnimationFrame(window.myRequest);
+              // document.location.reload();
             } else {
               if (!enemyDetectionEventScheduled) {
                 blob.status = 0;
@@ -548,6 +554,11 @@ function main() {
 
 
   // ################# PLAYER ASYNCHRONICITY #################
+  function reset() {
+    document.addEventListener("mousemove", handleMouseMove, false);
+    document.addEventListener("keydown", handleKeyDown, false);
+    main();
+  }
 
   function handleMouseMove(e) {
     let mouseX = e.pageX;
@@ -573,5 +584,5 @@ function main() {
 
   document.addEventListener("mousemove", handleMouseMove, false);
   document.addEventListener("keydown", handleKeyDown, false);
-  draw();
+  window.myRequest = draw();
 }
