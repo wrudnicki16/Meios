@@ -1,6 +1,9 @@
 function main() {
 
   let canvas = document.getElementById("myCanvas");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = "block";
   let ctx = canvas.getContext("2d");
 
   // starting off with blob's x and y position
@@ -285,7 +288,7 @@ function main() {
             ball.x = getRandomInt(ballRadius + 1, canvas.width - ballRadius - 1);
             ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
             blob.eat();
-            if (player.score >= 120) {
+            if (player.score >= 200) {
               alert("CONGRATULATIONS, YOU'VE WON!");
               document.location.reload();
             }
@@ -453,13 +456,17 @@ function main() {
             } else {
               if (!enemyDetectionEventScheduled) {
                 blob.status = 0;
+                if (numEnemiesAlive() === 0) {
+                  alert("CONGRATULATIONS, YOU'VE WON!");
+                  document.location.reload();
+                }
                 for (let j = 0; j < enemyBlobs.length; j++) {
                   let enemyBlob = enemyBlobs[j];
                   if (enemyBlob.status === 1) {
-                    enemyBlob.radius *= 1.5;
+                    enemyBlob.radius += Math.ceil(enemyBlob.radius / 2);
+                    enemyBlob.maxSpeed -= enemyBlob.speedDcr;
                   }
                 }
-
                 enemyDetectionEventScheduled = true;
                 setTimeout(() => enemyDetectCallback(blob, playerBlob), 50);
               }
@@ -469,6 +476,9 @@ function main() {
       }
     }
   }
+
+  // ################## BLOB DETECTION HELPERS ##################
+
   function enemyDetectCallback(blob, playerBlob) {
     enemyDetectionEventScheduled = false;
     playerBlob.eatOtherBlob(blob);
@@ -490,6 +500,16 @@ function main() {
       }
     }
     return false;
+  }
+
+  function numEnemiesAlive() {
+    let count = 0;
+    for (let i = 0; i < enemyBlobs.length; i++) {
+      if (enemyBlobs[i].status === 1) {
+        count++;
+      }
+    }
+    return count;
   }
 
 
