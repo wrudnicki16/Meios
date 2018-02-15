@@ -13,20 +13,25 @@
 <div id="myModal" class="modal">
   <div class="modal-content">
     <h1>Meios</h1>
-    <div class="modal-content-instructions">
       <p>Move your mouse to gather as much food as you can.</p>
       <p>Press <span>Space</span> to split, but be careful:</p>
       <p>Though smaller cells are faster, they can be eaten by larger cells!</p>
-        <button id="myBtn">Start Game</button>
-    </div>
+      <button id="myBtn">Start Game</button>
   </div>
 </div>
-<!-- <div id="myLosingModal" class="modal">
+<div id="myLosingModal" class="modal">
   <div id="myLosingContent" class="modal-content">
     <h1>The enemy overwhelmed you!</h1>
-    <button id="tryBtn">Try Again?</button>
+    <button class="tryBtn">Try Again?</button>
   </div>
-</div> -->
+</div>
+<div id="myWinningModal" class="modal">
+  <div id="myWinningContent" class="modal-content">
+    <h1>Congratulations! You've Won!</h1>
+    <button class="tryBtn">Try Again?</button>
+  </div>
+</div>
+
 <script>
   let modal = document.getElementById('myModal');
   let btn = document.getElementById("myBtn");

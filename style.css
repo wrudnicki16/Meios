@@ -35,20 +35,16 @@ h1 {
 .modal-content {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-around;
   align-content: center;
   background-color: #fafafa;
   margin: 15% auto;
   padding: 1%;
   border: 1px solid #888;
   border-radius: 20px;
-  width: 60%;
+  width: 55%;
   height: 40%;
   font-size: 24px;
-}
-
-.modal-content-instructions p {
-  margin-top: 2%;
 }
 
 span {
@@ -57,6 +53,7 @@ span {
   border: 1px solid #999;
   border-radius: 5px;
   padding: 5px 30px;
+  line-height: 1.7;
 }
 
 button {
@@ -69,9 +66,12 @@ button {
   outline: none;
   cursor: pointer;
   border-radius: 5px;
-  margin-top: 20px;
 }
 
 #myLosingModal {
+  display: none;
+}
+
+#myWinningModal {
   display: none;
 }
