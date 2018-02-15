@@ -285,7 +285,7 @@ function main() {
             ball.x = getRandomInt(ballRadius + 1, canvas.width - ballRadius - 1);
             ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
             blob.eat();
-            if (player.score === 120) {
+            if (player.score >= 120) {
               alert("CONGRATULATIONS, YOU'VE WON!");
               document.location.reload();
             }
@@ -427,7 +427,7 @@ function main() {
           ball.y = getRandomInt(ballRadius + 1, canvas.height - ballRadius - 1);
           ball.taken = null;
           blob.eat();
-          if (blob.player.score === 120) {
+          if (blob.player.score >= 120) {
             alert("You were OVERWHELMED by the enemy!");
             document.location.reload();
           }
@@ -467,10 +467,6 @@ function main() {
     enemyDetectionEventScheduled = false;
     playerBlob.eatOtherBlob(blob);
   }
-
-
-
-
 
   // ############## ASYNCHRONICITY HELPER #################
 

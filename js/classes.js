@@ -55,7 +55,9 @@ class Blob {
       let displacementY = normalizedDY * this.radius * 2;
       let speedMultiplierX = displacementX / 4;
       let speedMultiplierY = displacementY / 4;
-      let originBlob = new Blob(this.x, this.y, this.dx, this.dy, this.maxSpeed, this.player, this.radius / 2, this, this.colorFill, this.colorStroke);
+      let originBlob = new Blob(this.x, this.y, this.dx, this.dy,
+                                this.maxSpeed,this.player, this.radius / 2, this,
+                                this.colorFill, this.colorStroke);
       let ejectBlob = new Blob(this.x + displacementX,
                                this.y + displacementY, speedMultiplierX, speedMultiplierY,
                                this.maxSpeed, this.player, this.radius / 2, this,
