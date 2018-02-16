@@ -68,7 +68,6 @@ class Blob {
   }
 
   slowToMaxSpeed() {
-    debugger;
     if (Math.abs(this.dx) <=  Math.abs(this.maxSpeed) &&
         Math.abs(this.dy) <= Math.abs(this.maxSpeed)) {
       this.ejecting = false;

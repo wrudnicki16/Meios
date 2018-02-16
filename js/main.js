@@ -56,8 +56,6 @@ function main() {
   enemyBlobs.push(enemyBlob1); enemyBlobs.push(enemyBlob2);
   enemyBlobs.push(enemyBlob3); enemyBlobs.push(enemyBlob4);
 
-  debugger;
-
   for (let i = 0; i < numBalls; i++) {
     makeBall();
   }
@@ -155,11 +153,9 @@ function main() {
       distX = relMouseX - blob.x;
       distY = relMouseY - blob.y;
       if (blob.ejecting) {
-        debugger;
         blob.slowToMaxSpeed();
         preventOutOfBounds(blob);
       } else {
-        console.warn(blob.x);
         setSpeed(blob, i);
       }
       blob.x += blob.dx;
@@ -420,8 +416,6 @@ function main() {
             closestBall = ball;
             minBallDist = L;
           }
-        } else {
-          debugger;
         }
       }
       closestBall.taken = blob;
