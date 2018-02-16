@@ -75,3 +75,13 @@ button {
 #myWinningModal {
   display: none;
 }
+
+.footer {
+  display: flex;
+  justify-content: center;
+}
+
+a {
+  color: #000;
+  margin: 0 30px;
+}
