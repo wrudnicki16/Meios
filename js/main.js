@@ -468,7 +468,7 @@ function main() {
                 for (let j = 0; j < enemyBlobs.length; j++) {
                   let enemyBlob = enemyBlobs[j];
                   if (enemyBlob.status === 1) {
-                    enemyBlob.radius += Math.ceil(enemyBlob.radius / 3);
+                    enemyBlob.radius += Math.ceil(enemyBlob.radius / 4);
                     enemyBlob.maxSpeed -= enemyBlob.speedDcr;
                   }
                 }
