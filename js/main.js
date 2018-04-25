@@ -130,9 +130,11 @@ function main() {
   }
 
   function drawScore() {
-    ctx.font = "16px Arial";
     ctx.fillStyle = "#00aa44";
-    ctx.fillText(`Score: ${player.score}`, 8, 20);
+    ctx.fillRect(25, 20, 140, 45);
+    ctx.font = "24px Arial";
+    ctx.fillStyle = "#fff";
+    ctx.fillText(`Score: ${player.score}`, 40, 50);
   }
 
   function draw() {
