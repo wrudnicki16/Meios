@@ -136,7 +136,6 @@ function main() {
     ctx.fillStyle = "#fff";
     ctx.fillText(`Score: ${player.score}`, 40, 50);
   }
-  // testing!
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
