@@ -561,6 +561,13 @@ function main() {
     relMouseY = mouseY - canvas.offsetTop;
   }
 
+  function handleTouch(e) {
+    let mouseX = e.changedTouches[0].pageX;
+    let mouseY = e.changedTouches[0].pageY;
+    relMouseX = mouseX - canvas.offsetLeft;
+    relMouseY = mouseY - canvas.offsetTop;
+  }
+
   function handleKeyDown(e) {
     if (e.keyCode === 32) {
       e.preventDefault();
@@ -577,6 +584,9 @@ function main() {
   }
 
   document.addEventListener("mousemove", handleMouseMove, false);
+  document.addEventListener("touchstart", handleTouch, false);
+  document.addEventListener("touchmove", handleTouch, false);
+  document.addEventListener("touchend", handleTouch, false);
   document.addEventListener("keydown", handleKeyDown, false);
   window.myRequest = draw();
 }
